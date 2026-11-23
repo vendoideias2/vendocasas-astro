@@ -1,0 +1,417 @@
+---
+// ==========================================================================
+// BASE LAYOUT — VendoCasas (Brand Official)
+// ==========================================================================
+
+import type { Props } from 'astro';
+import '../styles/global.css';
+
+interface BaseLayoutProps extends Props {
+  title: string;
+  description?: string;
+  canonical?: string;
+  ogImage?: string;
+  ogType?: 'website' | 'article';
+  noIndex?: boolean;
+  structuredData?: Record<string, unknown>;
+  children: Props['children'];
+}
+
+const {
+  title,
+  description = 'Portal imobiliário para compra e aluguel de imóveis em Cedral, São José do Rio Preto e região. Busca avançada, mapa interativo e atendimento especializado.',
+  canonical,
+  ogImage = '/og-default.jpg',
+  ogType = 'website',
+  noIndex = false,
+  structuredData,
+  children,
+} = Astro.props;
+
+const siteUrl = 'https://vendocasas.com.br';
+const pageUrl = canonical ? `${siteUrl}${canonical}` : Astro.url.href;
+const fullOgImage = ogImage.startsWith('http') ? ogImage : `${siteUrl}${ogImage}`;
+
+// Dados oficiais da marca
+const brand = {
+  name: 'VendoCasas',
+  tagline: 'Negócios Imobiliários',
+  phone: '(17) 99681-0101',
+  phoneFormatted: '+55 17 99681-0101',
+  email: 'contato@vendocasas.com.br',
+  whatsapp: '5517996810101',
+  whatsappLink: 'https://wa.me/5517996810101',
+  creci: '212.189-F',
+  address: {
+    street: 'São José do Rio Preto e Região',
+    city: 'São José do Rio Preto',
+    state: 'SP',
+    country: 'BR',
+    region: 'Noroeste Paulista'
+  },
+  social: {
+    instagram: 'https://instagram.com/vendo.casas2',
+    facebook: 'https://facebook.com/vendocasas',
+    linkedin: 'https://linkedin.com/company/vendocasas'
+  }
+};
+---
+
+<!doctype html>
+<html lang="pt-BR" data-theme="light">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="generator" content={Astro.generator} />
+
+    <!-- Primary Meta -->
+    <title>{title} | {brand.name}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={pageUrl} />
+
+    <!-- Robots -->
+    {noIndex && <meta name="robots" content="noindex, nofollow" />}
+
+    <!-- Open Graph -->
+    <meta property="og:type" content={ogType} />
+    <meta property="og:url" content={pageUrl} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={fullOgImage} />
+    <meta property="og:site_name" content={brand.name} />
+    <meta property="og:locale" content="pt_BR" />
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:url" content={pageUrl} />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={fullOgImage} />
+
+    <!-- Favicon & Manifest -->
+    <link rel="icon" type="image/png" href="/vendocasas_logo.png" />
+    <link rel="apple-touch-icon" href="/vendocasas_logo.png" />
+    <link rel="manifest" href="/manifest.json" />
+
+    <!-- Preconnect for performance -->
+    <link rel="preconnect" href="https://images.vendocasas.com.br" crossorigin />
+    <link rel="dns-prefetch" href="https://maps.googleapis.com" />
+
+    <!-- Structured Data -->
+    {structuredData && (
+      <script type="application/ld+json" set:html={JSON.stringify(structuredData)} />
+    )}
+
+    <!-- Organization JSON-LD (site-wide) -->
+    <script type="application/ld+json" set:html={JSON.stringify({
+      '@context': 'https://schema.org',
+      '@type': 'RealEstateAgent',
+      'name': brand.name,
+      'url': siteUrl,
+      'logo': `${siteUrl}/vendocasas_logo.png`,
+      'sameAs': [
+        brand.social.instagram,
+        brand.social.linkedin,
+        brand.whatsappLink
+      ],
+      'address': {
+        '@type': 'PostalAddress',
+        'addressCountry': brand.address.country,
+        'addressRegion': brand.address.state,
+        'addressLocality': brand.address.city
+      },
+      'telephone': brand.phoneFormatted,
+      'email': brand.email,
+      'priceRange': '$$$',
+      'areaServed': {
+        '@type': 'City',
+        'name': 'São José do Rio Preto'
+      },
+      'description': 'Especialistas em imóveis em Cedral, São José do Rio Preto e região. Programa Minha Casa Minha Vida, alto padrão e investimentos.'
+    })} />
+  </head>
+  <body class="flex flex-col min-h-screen">
+    <!-- Skip Link -->
+    <a href="#main-content" class="skip-link">Pular para o conteúdo principal</a>
+
+    <!-- Header -->
+    <header class="fixed top-0 left-0 right-0 z-[var(--z-sticky)] bg-[var(--color-surface)]/95 backdrop-blur-sm border-b border-[var(--color-border)]" role="banner">
+      <nav class="container flex items-center justify-between h-[var(--header-height)] lg:h-[var(--header-height-lg)]" aria-label="Navegação principal">
+        <!-- Logo -->
+        <a href="/" class="logo-mark shrink-0" aria-label="{brand.name} - Página inicial">
+          <img src="/vendocasas_logo.png" alt="" height="46" width="auto" loading="lazy" />
+          <span class="font-display font-medium text-xl text-[var(--color-text-primary)] hidden sm:block">{brand.name}</span>
+        </a>
+
+        <!-- Desktop Navigation -->
+        <div class="hidden lg:flex items-center gap-1">
+          <a href="/comprar" class="navlink">Comprar</a>
+          <a href="/alugar" class="navlink">Alugar</a>
+          <a href="/lancamentos" class="navlink">Lançamentos</a>
+          <a href="/mcmv" class="navlink">Minha Casa Minha Vida</a>
+          <a href="/alto-padrao" class="navlink">Alto Padrão</a>
+          <a href="/como-funciona" class="navlink">Como funciona</a>
+        </div>
+
+        <!-- Actions -->
+        <div class="flex items-center gap-3">
+          <!-- Search Trigger (Mobile) -->
+          <button
+            class="lg:hidden p-2 rounded-md text-[var(--color-text-secondary)] hover:bg-[var(--color-surface-elevated)] transition-colors"
+            aria-label="Abrir busca"
+            aria-expanded="false"
+            aria-controls="mobile-search"
+            id="search-trigger"
+          >
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <circle cx="11" cy="11" r="8"/>
+              <path d="M21 21l-4.35-4.35"/>
+            </svg>
+          </button>
+
+          <!-- User Menu / Auth -->
+          <div class="hidden sm:flex items-center gap-2">
+            <a href="/entrar" class="btn-ghost text-sm">Entrar</a>
+            <a href="/cadastrar" class="btn-primary text-sm">Cadastrar</a>
+          </div>
+
+          <!-- WhatsApp CTA (Desktop) -->
+          <a href={brand.whatsappLink} target="_blank" rel="noopener noreferrer" class="hidden lg:inline-flex btn-gold items-center gap-2 px-4 py-2" aria-label="Falar no WhatsApp">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5.1-1.3A10 10 0 1 0 12 2Zm0 18.2a8.2 8.2 0 0 1-4.2-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2Zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1-.2.2-.7.8-.8 1-.2.2-.3.2-.5.1-1.4-.7-2.3-1.3-3.2-2.9-.2-.4.2-.4.6-1.2.1-.2 0-.4 0-.5-.1-.1-.6-1.4-.8-2-.2-.5-.4-.4-.6-.4h-.5c-.2 0-.5.1-.7.3-.2.2-.9.9-.9 2.2s1 2.6 1.1 2.8c.1.2 2 3 4.8 4.2.7.3 1.2.5 1.6.6.7.2 1.3.2 1.8.1.5-.1 1.5-.6 1.7-1.2.2-.6.2-1.1.2-1.2-.1-.1-.3-.2-.5-.3Z"/></svg>
+            <span class="font-semibold">WhatsApp</span>
+          </a>
+
+          <!-- Mobile Menu Trigger -->
+          <button
+            class="lg:hidden p-2 rounded-md text-[var(--color-text-secondary)] hover:bg-[var(--color-surface-elevated)] transition-colors"
+            aria-label="Abrir menu"
+            aria-expanded="false"
+            aria-controls="mobile-menu"
+            id="menu-trigger"
+          >
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <path d="M3 12h18M3 6h18M3 18h18" stroke-linecap="round"/>
+            </svg>
+          </button>
+        </div>
+      </nav>
+
+      <!-- Mobile Search (Collapsible) -->
+      <div id="mobile-search" class="lg:hidden overflow-hidden transition-all duration-300 max-h-0" role="search" aria-label="Busca móvel">
+        <div class="container py-4 border-t border-[var(--color-border)]">
+          <form class="flex gap-2" action="/busca" method="GET">
+            <label for="mobile-q" class="sr-only">O que você procura?</label>
+            <input
+              type="search"
+              id="mobile-q"
+              name="q"
+              placeholder="Bairro, cidade, tipo de imóvel..."
+              class="flex-1"
+              aria-label="Termo de busca"
+            />
+            <button type="submit" class="btn-primary whitespace-nowrap">Buscar</button>
+          </form>
+        </div>
+      </div>
+
+      <!-- Mobile Menu (Drawer) -->
+      <div id="mobile-menu" class="lg:hidden fixed inset-0 z-[var(--z-modal)] transform translate-x-full transition-transform duration-300 ease-out" role="dialog" aria-modal="true" aria-label="Menu de navegação" hidden>
+        <div class="absolute inset-0 bg-[var(--color-charcoal)]/50 backdrop-blur-sm" aria-hidden="true"></div>
+        <aside class="absolute top-0 right-0 bottom-0 w-full max-w-sm bg-[var(--color-surface)] shadow-xl flex flex-col">
+          <div class="flex items-center justify-between p-4 border-b border-[var(--color-border)]">
+            <div class="logo-mark">
+              <img src="/vendocasas_logo.png" alt="" height="36" width="auto" />
+              <span class="font-display font-medium text-lg text-[var(--color-text-primary)]">{brand.name}</span>
+            </div>
+            <button
+              class="p-2 rounded-md text-[var(--color-text-secondary)] hover:bg-[var(--color-surface-elevated)]"
+              aria-label="Fechar menu"
+              id="menu-close"
+            >
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                <path d="M18 6L6 18M6 6l12 12" stroke-linecap="round"/>
+              </svg>
+            </button>
+          </div>
+          <nav class="flex-1 py-4 px-4 overflow-y-auto" aria-label="Navegação mobile">
+            <ul class="space-y-1">
+              <li><a href="/comprar" class="nav-link-mobile block py-3 px-2 rounded-md">Comprar imóvel</a></li>
+              <li><a href="/alugar" class="nav-link-mobile block py-3 px-2 rounded-md">Alugar imóvel</a></li>
+              <li><a href="/lancamentos" class="nav-link-mobile block py-3 px-2 rounded-md">Lançamentos</a></li>
+              <li><a href="/mcmv" class="nav-link-mobile block py-3 px-2 rounded-md">Minha Casa Minha Vida</a></li>
+              <li><a href="/alto-padrao" class="nav-link-mobile block py-3 px-2 rounded-md">Alto Padrão</a></li>
+              <li><a href="/como-funciona" class="nav-link-mobile block py-3 px-2 rounded-md">Como funciona</a></li>
+              <li><a href="/avaliacao" class="nav-link-mobile block py-3 px-2 rounded-md">Avaliação gratuita</a></li>
+            </ul>
+          </nav>
+          <div class="p-4 border-t border-[var(--color-border)] space-y-2">
+            <a href="/entrar" class="btn-ghost w-full justify-center">Entrar</a>
+            <a href="/cadastrar" class="btn-primary w-full justify-center">Criar conta</a>
+            <a href="/anunciar" class="btn-outline w-full justify-center">Anunciar imóvel</a>
+            <a href={brand.whatsappLink} target="_blank" rel="noopener noreferrer" class="btn-gold w-full justify-center gap-2">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5.1-1.3A10 10 0 1 0 12 2Zm0 18.2a8.2 8.2 0 0 1-4.2-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2Zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1-.2.2-.7.8-.8 1-.2.2-.3.2-.5.1-1.4-.7-2.3-1.3-3.2-2.9-.2-.4.2-.4.6-1.2.1-.2 0-.4 0-.5-.1-.1-.6-1.4-.8-2-.2-.5-.4-.4-.6-.4h-.5c-.2 0-.5.1-.7.3-.2.2-.9.9-.9 2.2s1 2.6 1.1 2.8c.1.2 2 3 4.8 4.2.7.3 1.2.5 1.6.6.7.2 1.3.2 1.8.1.5-.1 1.5-.6 1.7-1.2.2-.6.2-1.1.2-1.2-.1-.1-.3-.2-.5-.3Z"/></svg>
+              Falar no WhatsApp
+            </a>
+          </div>
+        </aside>
+      </div>
+    </header>
+
+    <!-- Main Content -->
+    <main id="main-content" class="flex-1 pt-[var(--header-height)] lg:pt-[var(--header-height-lg)]" role="main">
+      <slot />
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-[var(--color-cream-dark)] border-t border-[var(--color-border)]" role="contentinfo">
+      <div class="container py-10 lg:py-16">
+        <div class="wrap flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+          <div class="logo-mark mb-4 md:mb-0">
+            <img src="/vendocasas_logo.png" alt="" height="36" width="auto" />
+            <span class="font-display font-medium text-xl text-[var(--color-text-primary)] ml-3 hidden sm:inline-block">{brand.name}</span>
+          </div>
+          <p class="fine text-center md:text-left">© {new Date().getFullYear()} {brand.name} {brand.tagline}. CRECI {brand.creci}. Todos os direitos reservados.</p>
+          <div class="flex flex-wrap items-center justify-center md:justify-end gap-6 text-xs text-[var(--color-text-muted)]">
+            <a href="/privacidade" class="hover:text-[var(--color-accent)] transition-colors">Política de Privacidade</a>
+            <a href="/termos" class="hover:text-[var(--color-accent)] transition-colors">Termos de Uso</a>
+            <a href="/cookies" class="hover:text-[var(--color-accent)] transition-colors">Cookies</a>
+            <a href="/acessibilidade" class="hover:text-[var(--color-accent)] transition-colors">Acessibilidade</a>
+          </div>
+        </div>
+      </div>
+    </footer>
+
+    <!-- Mobile Menu Script -->
+    <script is:inline>
+      (function() {
+        const menuTrigger = document.getElementById('menu-trigger');
+        const menuClose = document.getElementById('menu-close');
+        const mobileMenu = document.getElementById('mobile-menu');
+        const searchTrigger = document.getElementById('search-trigger');
+        const mobileSearch = document.getElementById('mobile-search');
+
+        let lastFocusedElement = null;
+
+        function openMenu() {
+          lastFocusedElement = document.activeElement;
+          mobileMenu.hidden = false;
+          requestAnimationFrame(() => {
+            mobileMenu.classList.remove('translate-x-full');
+            mobileMenu.classList.add('translate-x-0');
+          });
+          menuTrigger.setAttribute('aria-expanded', 'true');
+          document.body.style.overflow = 'hidden';
+          menuClose.focus();
+        }
+
+        function closeMenu() {
+          mobileMenu.classList.add('translate-x-full');
+          mobileMenu.classList.remove('translate-x-0');
+          menuTrigger.setAttribute('aria-expanded', 'false');
+          document.body.style.overflow = '';
+          setTimeout(() => {
+            mobileMenu.hidden = true;
+            lastFocusedElement?.focus();
+          }, 300);
+        }
+
+        function toggleSearch() {
+          const isOpen = mobileSearch.classList.contains('max-h-96');
+          if (isOpen) {
+            mobileSearch.classList.remove('max-h-96');
+            mobileSearch.classList.add('max-h-0');
+            searchTrigger.setAttribute('aria-expanded', 'false');
+          } else {
+            mobileSearch.classList.remove('max-h-0');
+            mobileSearch.classList.add('max-h-96');
+            searchTrigger.setAttribute('aria-expanded', 'true');
+            mobileSearch.querySelector('input')?.focus();
+          }
+        }
+
+        menuTrigger?.addEventListener('click', openMenu);
+        menuClose?.addEventListener('click', closeMenu);
+        mobileMenu?.querySelector('[aria-hidden="true"]')?.addEventListener('click', closeMenu);
+        searchTrigger?.addEventListener('click', toggleSearch);
+
+        // Close on Escape
+        document.addEventListener('keydown', (e) => {
+          if (e.key === 'Escape') {
+            if (!mobileMenu.classList.contains('translate-x-full')) closeMenu();
+            if (mobileSearch.classList.contains('max-h-96')) toggleSearch();
+          }
+        });
+
+        // Trap focus in mobile menu
+        mobileMenu?.addEventListener('keydown', (e) => {
+          if (e.key === 'Tab') {
+            const focusableElements = mobileMenu.querySelectorAll('a[href], button, input, select, textarea, [tabindex]:not([tabindex="-1"])');
+            const first = focusableElements[0];
+            const last = focusableElements[focusableElements.length - 1];
+            if (e.shiftKey && document.activeElement === first) {
+              e.preventDefault();
+              last.focus();
+            } else if (!e.shiftKey && document.activeElement === last) {
+              e.preventDefault();
+              first.focus();
+            }
+          }
+        });
+      })();
+    </script>
+  </body>
+</html>
+
+<style is:global>
+  /* Nav link styles */
+  .navlink {
+    @apply px-3 py-2 text-sm font-semibold text-[var(--color-text-primary)] rounded-md
+           opacity-75 hover:opacity-100 hover:text-[var(--color-accent)]
+           transition-all duration-150;
+  }
+
+  .nav-link-mobile {
+    @apply text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]
+           hover:bg-[var(--color-surface-elevated)] transition-colors;
+  }
+
+  /* Button variants — Brand */
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2 px-5 py-2.5
+           bg-[var(--color-accent)] text-[var(--color-text-inverse)]
+           font-semibold text-sm rounded-md
+           hover:bg-[var(--color-accent-hover)]
+           active:scale-[0.98]
+           transition-all duration-150 var(--ease-out)
+           focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-focus)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--color-white)];
+  }
+
+  .btn-gold {
+    @apply inline-flex items-center justify-center gap-2 px-5 py-2.5
+           bg-[var(--color-accent-gold)] text-[var(--color-text-on-gold)]
+           font-semibold text-sm rounded-md
+           hover:bg-[var(--color-accent-gold-hover)]
+           active:scale-[0.98]
+           box-shadow: var(--shadow-gold)
+           transition-all duration-150 var(--ease-out)
+           focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-focus-gold)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--color-white)];
+  }
+
+  .btn-ghost {
+    @apply inline-flex items-center justify-center gap-2 px-5 py-2.5
+           text-[var(--color-text-primary)] font-semibold text-sm rounded-md
+           hover:bg-[var(--color-surface-elevated)]
+           active:scale-[0.98]
+           transition-all duration-150 var(--ease-out)
+           focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-focus)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--color-white)];
+  }
+
+  .btn-outline {
+    @apply inline-flex items-center justify-center gap-2 px-5 py-2.5
+           border border-[var(--color-border)] text-[var(--color-text-primary)] font-semibold text-sm rounded-md
+           hover:bg-[var(--color-surface-elevated)] hover:border-[var(--color-border-strong)]
+           active:scale-[0.98]
+           transition-all duration-150 var(--ease-out)
+           focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-focus)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--color-white)];
+  }
+</style>
