@@ -1,0 +1,485 @@
+---
+// ==========================================================================
+// PROPERTY CARD — Componente principal de imóvel (VendoCasas Brand)
+// ==========================================================================
+
+import { Image } from 'astro:assets';
+
+interface Property {
+  id: string;
+  title: string;
+  address: string;
+  neighborhood: string;
+  city: string;
+  state: string;
+  price: number;
+  priceType: 'sale' | 'rent';
+  condoFee?: number;
+  iptu?: number;
+  bedrooms: number;
+  bathrooms: number;
+  parkingSpaces: number;
+  area: number; // m²
+  propertyType: 'house' | 'apartment' | 'land' | 'commercial';
+  status: 'available' | 'pending' | 'sold' | 'rented';
+  featured?: boolean;
+  images: string[];
+  mainImage: string;
+  tags?: string[];
+  agent?: {
+    name: string;
+    photo: string;
+    creci: string;
+  };
+  mcmvFaixa?: 1 | 2 | 3 | 4; // Nova: faixa MCMV se aplicável
+}
+
+interface Props {
+  property: Property;
+  variant?: 'default' | 'featured' | 'compact' | 'horizontal';
+  priority?: boolean;
+}
+
+const { property, variant = 'default', priority = false } = Astro.props;
+
+const formatPrice = (price: number, type: 'sale' | 'rent') => {
+  return new Intl.NumberFormat('pt-BR', {
+    style: 'currency',
+    currency: 'BRL',
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+  }).format(price) + (type === 'rent' ? '/mês' : '');
+};
+
+const formatNumber = (num: number) => new Intl.NumberFormat('pt-BR').format(num);
+
+const propertyTypeLabels = {
+  house: 'Casa',
+  apartment: 'Apartamento',
+  land: 'Terreno',
+  commercial: 'Comercial',
+};
+
+const statusLabels = {
+  available: { label: 'Disponível', class: 'badge-available' },
+  pending: { label: 'Em negociação', class: 'badge-pending' },
+  sold: { label: 'Vendido', class: 'badge-sold' },
+  rented: { label: 'Alugado', class: 'badge-rented' },
+};
+
+const mcmvLabels = {
+  1: { label: 'MCMV Faixa 1', class: 'badge-mcmv-1' },
+  2: { label: 'MCMV Faixa 2', class: 'badge-mcmv-2' },
+  3: { label: 'MCMV Faixa 3', class: 'badge-mcmv-3' },
+  4: { label: 'MCMV Faixa 4', class: 'badge-mcmv-4' },
+};
+
+const status = statusLabels[property.status];
+
+const aspectRatios = {
+  default: '4 / 3',
+  featured: '16 / 9',
+  compact: '4 / 3',
+  horizontal: '16 / 9',
+};
+
+const imageAspectRatio = aspectRatios[variant];
+---
+
+<article class="property-card property-card--{variant} group" itemscope itemtype="https://schema.org/Product">
+  <a href={`/imovel/${property.id}`} class="property-card__link" aria-label={`Ver detalhes de ${property.title} em ${property.neighborhood}, ${property.city}`} itemprop="url">
+    <!-- Badges de status -->
+    <div class="property-card__badges" aria-label={`Status: ${status.label}${property.mcmvFaixa ? `, ${mcmvLabels[property.mcmvFaixa].label}` : ''}`}>
+      <span class={`badge ${status.class}`} itemprop="availability" content={property.status === 'available' ? 'InStock' : 'OutOfStock'}>
+        {status.label}
+      </span>
+      {property.mcmvFaixa && (
+        <span class={`badge ${mcmvLabels[property.mcmvFaixa].class}`} aria-label={mcmvLabels[property.mcmvFaixa].label}>
+          {mcmvLabels[property.mcmvFaixa].label}
+        </span>
+      )}
+      {property.featured && <span class="badge badge-featured" aria-label="Imóvel em destaque">Destaque</span>}
+      {property.tags?.map(tag => <span class="badge badge-tag">{tag}</span>)}
+    </div>
+
+    <!-- Imagem principal -->
+    <div class="property-card__image-wrapper" style="aspect-ratio: {imageAspectRatio};">
+      <Image
+        src={property.mainImage}
+        alt={`Foto principal de ${property.title}: ${property.bedrooms} quartos, ${property.bathrooms} banheiros, ${formatNumber(property.area)}m² em ${property.neighborhood}`}
+        widths={variant === 'featured' ? [400, 800, 1200, 1600] : [300, 600, 900, 1200]}
+        sizes={variant === 'featured' ? '(min-width: 1024px) 50vw, (min-width: 768px) 50vw, 100vw' : '(min-width: 1024px) 25vw, (min-width: 768px) 33vw, (min-width: 640px) 50vw, 100vw'}
+        loading={priority ? 'eager' : 'lazy'}
+        decoding="async"
+        class="property-card__image"
+        itemprop="image"
+      />
+      {property.images.length > 1 && (
+        <span class="property-card__gallery-indicator" aria-label={`Ver mais ${property.images.length} fotos`}>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+            <circle cx="8.5" cy="8.5" r="1.5" fill="currentColor"/>
+            <path d="M21 15l-5-5L5 21" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <span>{property.images.length}</span>
+        </span>
+      )}
+    </div>
+
+    <!-- Conteúdo do card -->
+    <div class="property-card__content">
+      <!-- Tipo + Localização -->
+      <div class="property-card__meta">
+        <span class="property-card__type" itemprop="category">{propertyTypeLabels[property.propertyType]}</span>
+        <address class="property-card__location" itemprop="address" itemscope itemtype="https://schema.org/PostalAddress">
+          <span itemprop="addressLocality">{property.neighborhood}</span>
+          <span class="divider" aria-hidden="true">·</span>
+          <span itemprop="addressRegion">{property.city}</span>
+          <meta itemprop="addressCountry" content="BR" />
+        </address>
+      </div>
+
+      <!-- Título -->
+      <h2 class="property-card__title" itemprop="name">
+        {property.title}
+      </h2>
+
+      <!-- Preço -->
+      <div class="property-card__price" itemprop="offers" itemscope itemtype="https://schema.org/Offer">
+        <span class="property-card__price-value" itemprop="price" content={property.price}>
+          {formatPrice(property.price, property.priceType)}
+        </span>
+        <meta itemprop="priceCurrency" content="BRL" />
+        <meta itemprop="availability" content={property.status === 'available' ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock'} />
+        {(property.condoFee || property.iptu) && (
+          <p class="property-card__price-details">
+            {property.condoFee && <span>Cond.: {formatPrice(property.condoFee, 'rent').replace('/mês', '')}</span>}
+            {property.iptu && <span>IPTU: {formatPrice(property.iptu, 'rent').replace('/mês', '')}</span>}
+          </p>
+        )}
+      </div>
+
+      <!-- Atributos principais -->
+      <ul class="property-card__attributes" aria-label="Características do imóvel">
+        <li class="property-card__attr" title="Quartos">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+            <polyline points="9 22 9 12 15 12 15 22"/>
+          </svg>
+          <span>{property.bedrooms}</span>
+        </li>
+        <li class="property-card__attr" title="Banheiros">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+            <path d="M9 6 6.5 3.5a1.5 1.5 0 0 0-1-.5C4.683 3 4 3.683 4 4.5V17a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-5"/>
+            <line x1="2" x2="22" y1="12" y2="12"/>
+          </svg>
+          <span>{property.bathrooms}</span>
+        </li>
+        <li class="property-card__attr" title="Vagas">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+            <path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.4 2.9A3.7 3.7 0 0 0 2 12v4c0 .6.4 1 1 1h2"/>
+            <circle cx="7" cy="17" r="2"/>
+            <circle cx="17" cy="17" r="2"/>
+          </svg>
+          <span>{property.parkingSpaces}</span>
+        </li>
+        <li class="property-card__attr" title="Área">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+            <path d="M3 9h18M9 3v18"/>
+          </svg>
+          <span>{formatNumber(property.area)}m²</span>
+        </li>
+      </ul>
+
+      <!-- Corretor (opcional) -->
+      {property.agent && (
+        <div class="property-card__agent" itemprop="seller" itemscope itemtype="https://schema.org/Person">
+          <img
+            src={property.agent.photo}
+            alt=""
+            class="property-card__agent-photo"
+            width="32"
+            height="32"
+            loading="lazy"
+            aria-hidden="true"
+          />
+          <div class="property-card__agent-info">
+            <span class="property-card__agent-name" itemprop="name">{property.agent.name}</span>
+            <span class="property-card__agent-creci" itemprop="identifier">CRECI {property.agent.creci}</span>
+          </div>
+        </div>
+      )}
+    </div>
+  </a>
+
+  <!-- Ações rápidas (hover/focus) -->
+  <div class="property-card__actions" role="group" aria-label="Ações rápidas">
+    <button
+      class="property-card__action-btn"
+      aria-label={`Adicionar ${property.title} aos favoritos`}
+      data-property-id={property.id}
+      data-action="favorite"
+    >
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+        <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+      </svg>
+    </button>
+    <button
+      class="property-card__action-btn"
+      aria-label={`Compartilhar ${property.title}`}
+      data-property-id={property.id}
+      data-action="share"
+    >
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+        <circle cx="18" cy="5" r="3"/>
+        <circle cx="6" cy="12" r="3"/>
+        <circle cx="18" cy="19" r="3"/>
+        <path d="M8.59 13.51l1.71 1.71M15.49 13.51l-1.71 1.71M12 8.59l1.71 1.71M12 15.49l-1.71 1.71"/>
+      </svg>
+    </button>
+  </div>
+</article>
+
+<style>
+  .property-card {
+    @apply relative bg-[var(--color-surface)] rounded-xl overflow-hidden
+           transition-all var(--duration-slow) var(--ease-out)
+           border var(--card-border);
+  }
+
+  .property-card:hover {
+    @apply shadow-lg border-[var(--color-border-strong)];
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-brand);
+  }
+
+  .property-card:focus-within {
+    @apply ring-2 ring-[var(--color-focus)] ring-offset-2 ring-offset-[var(--color-white)];
+  }
+
+  /* Variants */
+  .property-card--default {
+    @apply flex flex-col;
+  }
+
+  .property-card--featured {
+    @apply grid grid-cols-1 lg:grid-cols-2;
+  }
+
+  .property-card--compact {
+    @apply flex flex-col;
+  }
+
+  .property-card--horizontal {
+    @apply flex flex-col md:flex-row;
+  }
+
+  .property-card__link {
+    @apply block text-inherit;
+    text-decoration: none;
+  }
+
+  .property-card--featured .property-card__link {
+    @apply h-full grid grid-rows-[auto_1fr_auto];
+  }
+
+  .property-card--horizontal .property-card__link {
+    @apply flex h-full;
+  }
+
+  /* Badges */
+  .property-card__badges {
+    @apply absolute top-3 left-3 right-3 flex flex-wrap gap-2 z-10;
+  }
+
+  .badge {
+    @apply inline-flex items-center px-2 py-1 text-xs font-semibold rounded-full;
+  }
+
+  .badge-available {
+    @apply bg-[var(--color-available-bg)] text-[var(--color-available)];
+  }
+
+  .badge-pending {
+    @apply bg-[var(--color-pending-bg)] text-[var(--color-pending)];
+  }
+
+  .badge-sold,
+  .badge-rented {
+    @apply bg-[var(--color-sold-bg)] text-[var(--color-sold)];
+  }
+
+  .badge-featured {
+    @apply bg-[var(--color-accent-gold-lighter)] text-[var(--color-accent-gold)];
+  }
+
+  .badge-tag {
+    @apply bg-[var(--color-surface-elevated)] text-[var(--color-text-secondary)] border border-[var(--color-border)];
+  }
+
+  /* MCMV Badges - usando dourado com variações */
+  .badge-mcmv-1 { @apply bg-[var(--color-accent-gold-lighter)] text-[var(--color-accent-gold)]; }
+  .badge-mcmv-2 { @apply bg-[var(--color-accent-gold-soft)] text-[var(--color-accent-gold-dark)]; }
+  .badge-mcmv-3 { @apply bg-[var(--color-accent-gold)] text-[var(--color-text-on-gold)]; }
+  .badge-mcmv-4 { @apply bg-[var(--color-purple-light)] text-[var(--color-purple-dark)]; }
+
+  /* Image */
+  .property-card__image-wrapper {
+    @apply relative overflow-hidden bg-[var(--color-cream-dark)];
+  }
+
+  .property-card--featured .property-card__image-wrapper {
+    @apply rounded-none;
+  }
+
+  .property-card--horizontal .property-card__image-wrapper {
+    @apply md:rounded-r-none md:rounded-l-xl;
+  }
+
+  .property-card__image {
+    @apply w-full h-full object-cover transition-transform duration-500 var(--ease-out);
+  }
+
+  .property-card:hover .property-card__image {
+    transform: scale(1.03);
+  }
+
+  .property-card__gallery-indicator {
+    @apply absolute bottom-3 right-3 flex items-center gap-1 px-2 py-1
+           bg-[var(--color-charcoal)]/80 text-[var(--color-white)] text-xs rounded-full
+           backdrop-blur-sm;
+  }
+
+  /* Content */
+  .property-card__content {
+    @apply p-5 flex flex-col flex-1;
+  }
+
+  .property-card--featured .property-card__content {
+    @apply p-6 lg:p-8;
+  }
+
+  .property-card--horizontal .property-card__content {
+    @apply flex-1 justify-between;
+  }
+
+  .property-card__meta {
+    @apply flex items-center justify-between gap-2 mb-2;
+  }
+
+  .property-card__type {
+    @apply text-xs font-semibold text-[var(--color-accent)] uppercase tracking-wider;
+  }
+
+  .property-card__location {
+    @apply flex items-center gap-1.5 text-sm text-[var(--color-text-secondary)] not-italic;
+  }
+
+  .property-card__location .divider {
+    @apply text-[var(--color-text-muted)];
+  }
+
+  .property-card__title {
+    @apply text-lg font-display font-medium text-[var(--color-text-primary)] mb-3
+           line-clamp-2;
+  }
+
+  .property-card--featured .property-card__title {
+    @apply text-xl mb-4;
+  }
+
+  .property-card__price {
+    @apply mb-4;
+  }
+
+  .property-card__price-value {
+    @apply text-2xl font-display font-semibold text-[var(--color-text-primary)];
+  }
+
+  .property-card--featured .property-card__price-value {
+    @apply text-3xl;
+  }
+
+  .property-card__price-details {
+    @apply flex flex-wrap gap-3 mt-2 text-sm text-[var(--color-text-muted)];
+  }
+
+  .property-card__attributes {
+    @apply flex flex-wrap gap-4 mb-4;
+    padding-bottom: var(--space-4);
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .property-card--featured .property-card__attributes {
+    @apply gap-6 mb-6;
+  }
+
+  .property-card__attr {
+    @apply flex items-center gap-1.5 text-sm text-[var(--color-text-secondary)];
+  }
+
+  .property-card__attr svg {
+    @apply flex-shrink-0 text-[var(--color-text-muted)];
+  }
+
+  .property-card__agent {
+    @apply flex items-center gap-3 pt-3 border-t border-[var(--color-border)];
+  }
+
+  .property-card__agent-photo {
+    @apply w-8 h-8 rounded-full object-cover border border-[var(--color-border)];
+  }
+
+  .property-card__agent-info {
+    @apply flex flex-col;
+  }
+
+  .property-card__agent-name {
+    @apply text-sm font-medium text-[var(--color-text-primary)];
+  }
+
+  .property-card__agent-creci {
+    @apply text-xs text-[var(--color-text-muted)];
+  }
+
+  /* Actions */
+  .property-card__actions {
+    @apply absolute bottom-4 right-4 flex gap-1.5 opacity-0 translate-y-2
+           transition-all duration-200 var(--ease-out) pointer-events-none;
+  }
+
+  .property-card:hover .property-card__actions,
+  .property-card:focus-within .property-card__actions {
+    @apply opacity-100 translate-y-0 pointer-events-auto;
+  }
+
+  .property-card__action-btn {
+    @apply w-10 h-10 rounded-full bg-[var(--color-white)]/95 backdrop-blur-sm
+           text-[var(--color-text-secondary)] hover:text-[var(--color-accent)]
+           hover:bg-[var(--color-white)] shadow-md
+           flex items-center justify-center
+           transition-all duration-150 var(--ease-out);
+  }
+
+  .property-card__action-btn:focus-visible {
+    @apply outline-none ring-2 ring-[var(--color-focus)] ring-offset-2 ring-offset-[var(--color-white)];
+  }
+
+  /* Reduced motion */
+  @media (prefers-reduced-motion: reduce) {
+    .property-card,
+    .property-card__image,
+    .property-card__actions,
+    .property-card__action-btn {
+      transition: none !important;
+      animation: none !important;
+    }
+    .property-card:hover {
+      transform: none;
+    }
+    .property-card:hover .property-card__image {
+      transform: none;
+    }
+  }
+</style>
