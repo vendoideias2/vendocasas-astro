@@ -1,0 +1,151 @@
+---
+// ==========================================================================
+// SELECT COMPONENT (Native styled)
+// ==========================================================================
+
+import { uniqueId } from 'crypto';
+
+interface Props {
+  label?: string;
+  name: string;
+  id?: string;
+  required?: boolean;
+  disabled?: boolean;
+  error?: string;
+  hint?: string;
+  options: Array<{ value: string; label: string; count?: number }>;
+  value?: string;
+  placeholder?: string;
+  multiple?: boolean;
+  class?: string;
+  'aria-describedby'?: string;
+}
+
+const {
+  label,
+  name,
+  id = uniqueId('select-'),
+  required = false,
+  disabled = false,
+  error,
+  hint,
+  options,
+  value,
+  placeholder = 'Selecione...',
+  multiple = false,
+  class: className = '',
+  'aria-describedby': ariaDescribedBy,
+  ...attrs
+} = Astro.props;
+
+const describedBy = [error && `${id}-error`, hint && `${id}-hint`, ariaDescribedBy].filter(Boolean).join(' ') || undefined;
+---
+
+<div class="form-field {className}">
+  {label && (
+    <label for={id} class="form-field__label">
+      {label}
+      {required && <span class="form-field__required" aria-hidden="true">*</span>}
+    </label>
+  )}
+
+  <div class="form-field__select-wrapper">
+    <select
+      id={id}
+      name={name}
+      value={value}
+      required={required}
+      disabled={disabled}
+      multiple={multiple}
+      aria-invalid={error ? 'true' : 'false'}
+      aria-describedby={describedBy}
+      aria-required={required}
+      class="form-field__select {error ? 'form-field__select--error' : ''}"
+      {...attrs}
+    >
+      {placeholder && !value && (
+        <option value="" disabled selected hidden>{placeholder}</option>
+      )}
+      {options.map(option => (
+        <option value={option.value} selected={value === option.value}>
+          {option.label} {option.count && ` (${option.count})`}
+        </option>
+      ))}
+    </select>
+    <svg class="form-field__select-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+      <path d="M6 9l6 6 6-6" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+  </div>
+
+  {error && (
+    <p id={`${id}-error`} class="form-field__error" role="alert" aria-live="polite">
+      {error}
+    </p>
+  )}
+
+  {hint && !error && (
+    <p id={`${id}-hint`} class="form-field__hint">
+      {hint}
+    </p>
+  )}
+</div>
+
+<style>
+  .form-field {
+    @apply w-full;
+  }
+
+  .form-field__label {
+    @apply block text-sm font-medium text-[var(--color-text-primary)] mb-1.5;
+  }
+
+  .form-field__required {
+    @apply text-[var(--color-rose)] ml-0.5;
+  }
+
+  .form-field__select-wrapper {
+    @apply relative;
+  }
+
+  .form-field__select {
+    @apply w-full px-4 py-2.5 pr-10
+           bg-[var(--color-surface)] border border-[var(--color-border)]
+           rounded-md text-[var(--color-text-primary)]
+           appearance-none
+           transition-all duration-150 var(--ease-out);
+  }
+
+  .form-field__select:hover:not(:disabled) {
+    @apply border-[var(--color-border-strong)];
+  }
+
+  .form-field__select:focus {
+    @apply outline-none border-[var(--color-accent)]
+           ring-3 ring-[var(--color-accent-lighter)];
+  }
+
+  .form-field__select:disabled {
+    @apply bg-[var(--color-surface-hover)] text-[var(--color-text-muted)] cursor-not-allowed;
+  }
+
+  .form-field__select--error {
+    @apply border-[var(--color-rose)] focus:border-[var(--color-rose)] focus:ring-[var(--color-rose-light)];
+  }
+
+  .form-field__select-icon {
+    @apply absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none
+           text-[var(--color-text-muted)] transition-colors;
+  }
+
+  .form-field__select:focus + .form-field__select-icon {
+    @apply text-[var(--color-accent)];
+  }
+
+  .form-field__error {
+    @apply mt-1.5 text-sm text-[var(--color-rose)];
+  }
+
+  .form-field__hint {
+    @apply mt-1.5 text-sm text-[var(--color-text-muted)];
+  }
+</style>
