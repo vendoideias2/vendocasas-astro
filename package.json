@@ -1,0 +1,27 @@
+{
+  "name": "vendo-casas",
+  "type": "module",
+  "version": "1.0.0",
+  "description": "Portal imobiliário moderno, leve e SEO-ready",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "lint": "eslint . --ext .astro,.js,.ts",
+    "format": "prettier --write ."
+  },
+  "dependencies": {
+    "astro": "^4.16.0",
+    "@astrojs/sitemap": "^3.1.0",
+    "sharp": "^0.33.0"
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^7.0.0",
+    "@typescript-eslint/parser": "^7.0.0",
+    "eslint": "^8.57.0",
+    "eslint-plugin-astro": "^1.0.0",
+    "prettier": "^3.2.0",
+    "prettier-plugin-astro": "^0.13.0",
+    "typescript": "^5.4.0"
+  }
+}
