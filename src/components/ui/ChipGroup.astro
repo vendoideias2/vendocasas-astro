@@ -1,0 +1,198 @@
+---
+// ==========================================================================
+// CHIP GROUP — Para filtros de múltipla escolha (quartos, tipos, etc)
+// ==========================================================================
+
+interface Chip {
+  value: string;
+  label: string;
+  count?: number;
+  disabled?: boolean;
+}
+
+interface Props {
+  name: string;
+  label?: string;
+  chips: Chip[];
+  selected?: string[];
+  multiple?: boolean;
+  variant?: 'default' | 'outline' | 'filled';
+  class?: string;
+}
+
+const { name, label, chips, selected = [], multiple = true, variant = 'outline', class: className = '' } = Astro.props;
+---
+
+<div class="chip-group {className}" role="group" aria-labelledby={`${name}-label`}>
+  {label && (
+    <span id={`${name}-label`} class="chip-group__label">{label}</span>
+  )}
+  <div class="chip-group__chips flex flex-wrap gap-2">
+    {chips.map(chip => {
+      const isSelected = selected.includes(chip.value);
+      const isDisabled = chip.disabled;
+      const chipClass = `
+        chip chip--${variant}
+        ${isSelected ? 'chip--selected' : ''}
+        ${isDisabled ? 'chip--disabled' : ''}
+      `.replace(/\s+/g, ' ').trim();
+
+      return (
+        <button
+          type="button"
+          role={multiple ? 'checkbox' : 'radio'}
+          aria-checked={isSelected}
+          aria-disabled={isDisabled}
+          aria-label={chip.count !== undefined ? `${chip.label} (${chip.count} imóveis)` : chip.label}
+          class={chipClass}
+          data-chip-value={chip.value}
+          data-chip-group={name}
+          disabled={isDisabled}
+        >
+          <span class="chip__label">{chip.label}</span>
+          {chip.count !== undefined && !isSelected && (
+            <span class="chip__count" aria-hidden="true">{chip.count}</span>
+          )}
+          {isSelected && (
+            <svg class="chip__check" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" aria-hidden="true">
+              <polyline points="20 6 9 17 4 12" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          )}
+        </button>
+      );
+    })}
+  </div>
+  {multiple && selected.length > 0 && (
+    <button type="button" class="chip-group__clear" data-chip-group-clear={name} aria-label={`Limpar filtros de ${label || name}`}>
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+        <path d="M18 6L6 18M6 6l12 12" stroke-linecap="round"/>
+      </svg>
+      Limpar
+    </button>
+  )}
+</div>
+
+<script is:inline>
+  (function() {
+    document.querySelectorAll('.chip-group').forEach(group => {
+      const name = group.querySelector('[data-chip-group]')?.dataset.chipGroup;
+      if (!name) return;
+
+      const chips = group.querySelectorAll('[data-chip-group="' + name + '"]');
+      const clearBtn = group.querySelector('[data-chip-group-clear="' + name + '"]');
+      const hiddenInput = document.createElement('input');
+      hiddenInput.type = 'hidden';
+      hiddenInput.name = name;
+      group.appendChild(hiddenInput);
+
+      function updateInput() {
+        const selected = Array.from(chips)
+          .filter(c => c.classList.contains('chip--selected'))
+          .map(c => c.dataset.chipValue);
+        hiddenInput.value = selected.join(',');
+      }
+
+      chips.forEach(chip => {
+        chip.addEventListener('click', () => {
+          if (chip.disabled) return;
+          const isRadio = chip.getAttribute('role') === 'radio';
+          if (isRadio) {
+            chips.forEach(c => c.classList.remove('chip--selected'));
+            chip.classList.add('chip--selected');
+          } else {
+            chip.classList.toggle('chip--selected');
+          }
+          chip.setAttribute('aria-checked', chip.classList.contains('chip--selected'));
+          updateInput();
+        });
+
+        // Keyboard support
+        chip.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            chip.click();
+          }
+        });
+      });
+
+      clearBtn?.addEventListener('click', () => {
+        chips.forEach(c => {
+          c.classList.remove('chip--selected');
+          c.setAttribute('aria-checked', 'false');
+        });
+        updateInput();
+      });
+
+      updateInput();
+    });
+  })();
+</script>
+
+<style>
+  .chip-group {
+    @apply w-full;
+  }
+
+  .chip-group__label {
+    @apply block text-xs font-medium text-[var(--color-text-secondary)] uppercase tracking-wider mb-2;
+  }
+
+  .chip {
+    @apply inline-flex items-center gap-1.5 px-3 py-1.5
+           text-sm font-medium rounded-full
+           transition-all duration-150 var(--ease-out)
+           focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-focus)] focus-visible:ring-offset-2;
+  }
+
+  .chip--default {
+    @apply bg-[var(--color-surface-elevated)] text-[var(--color-text-primary)]
+           border border-[var(--color-border)]
+           hover:bg-[var(--color-slate-100)] hover:border-[var(--color-border-strong)];
+  }
+
+  .chip--outline {
+    @apply bg-transparent text-[var(--color-text-primary)]
+           border border-[var(--color-border)]
+           hover:bg-[var(--color-surface-elevated)] hover:border-[var(--color-border-strong)];
+  }
+
+  .chip--filled {
+    @apply bg-[var(--color-slate-100)] text-[var(--color-text-primary)]
+           hover:bg-[var(--color-slate-200)];
+  }
+
+  .chip--selected {
+    @apply bg-[var(--color-accent)] text-[var(--color-text-inverse)]
+           border-[var(--color-accent)]
+           hover:bg-[var(--color-accent-hover)] hover:border-[var(--color-accent-hover)];
+  }
+
+  .chip--selected.chip--outline {
+    @apply bg-[var(--color-accent)] border-[var(--color-accent)];
+  }
+
+  .chip--selected.chip--filled {
+    @apply bg-[var(--color-accent)] text-[var(--color-text-inverse)];
+  }
+
+  .chip--disabled {
+    @apply opacity-40 cursor-not-allowed pointer-events-none;
+  }
+
+  .chip__count {
+    @apply text-xs opacity-70;
+  }
+
+  .chip--selected .chip__count {
+    @apply opacity-100;
+  }
+
+  .chip__check {
+    @apply flex-shrink-0;
+  }
+
+  .chip-group__clear {
+    @apply mt-2 text-sm text-[var(--color-text-secondary)] hover:text-[var(--color-accent)]
+           flex items-center gap-1.5 transition-colors;
+  }
+</style>
