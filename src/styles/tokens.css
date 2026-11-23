@@ -1,0 +1,341 @@
+/* ==========================================================================
+   DESIGN TOKENS — VendoCasas (Brand Official)
+   Paleta extraída do template landing_alto_padrao.html
+   ========================================================================== */
+
+/* Color Palette — VendoCasas Official */
+:root {
+  /* Brand Core — Roxo VendoCasas */
+  --color-purple: #3C0359;
+  --color-purple-dark: #26023A;
+  --color-purple-soft: #5A2A7A;
+  --color-purple-light: #E8D5F0;
+  --color-purple-lighter: #F3EDF6;
+
+  /* Brand Accent — Dourado/Ouro */
+  --color-gold: #CDA502;
+  --color-gold-dark: #A98600;
+  --color-gold-light: #F5E9C0;
+  --color-gold-lighter: #FDF8F0;
+
+  /* Neutros — Creme/Off-white */
+  --color-cream: #F7F3EC;
+  --color-cream-dark: #EFE8DA;
+  --color-cream-darker: #E6DFD3;
+
+  /* Texto — Charcoal (quase preto com tom roxo) */
+  --color-charcoal: #241B2E;
+  --color-charcoal-light: #3D3045;
+  --color-charcoal-lighter: #5A4D63;
+
+  /* Branco puro */
+  --color-white: #FFFFFF;
+
+  /* Semânticos derivados */
+  --color-sage: #6B8E6B;
+  --color-sage-light: #F0F5F0;
+  --color-rose: #E05252;
+  --color-rose-light: #FEF2F2;
+
+  /* ===== ALIASES SEMÂNTICOS (usar estes no código) ===== */
+
+  /* Backgrounds */
+  --color-bg: var(--color-cream);
+  --color-bg-alt: var(--color-white);
+  --color-surface: var(--color-white);
+  --color-surface-elevated: var(--color-cream);
+  --color-surface-hover: var(--color-cream-dark);
+
+  /* Bordas */
+  --color-border: var(--color-cream-dark);
+  --color-border-strong: var(--color-cream-darker);
+  --color-border-brand: var(--color-purple-soft);
+
+  /* Texto */
+  --color-text-primary: var(--color-charcoal);
+  --color-text-secondary: var(--color-charcoal-light);
+  --color-text-muted: var(--color-charcoal-lighter);
+  --color-text-inverse: var(--color-white);
+  --color-text-on-brand: var(--color-white);
+  --color-text-on-gold: var(--color-purple-dark);
+
+  /* Brand Actions */
+  --color-accent: var(--color-purple);
+  --color-accent-hover: var(--color-purple-dark);
+  --color-accent-soft: var(--color-purple-light);
+  --color-accent-lighter: var(--color-purple-lighter);
+
+  --color-accent-gold: var(--color-gold);
+  --color-accent-gold-hover: var(--color-gold-dark);
+  --color-accent-gold-soft: var(--color-gold-light);
+  --color-accent-gold-lighter: var(--color-gold-lighter);
+
+  /* Focus */
+  --color-focus: var(--color-purple);
+  --color-focus-gold: var(--color-gold);
+
+  /* Status */
+  --color-available: var(--color-sage);
+  --color-available-bg: var(--color-sage-light);
+  --color-pending: var(--color-gold);
+  --color-pending-bg: var(--color-gold-lighter);
+  --color-sold: var(--color-charcoal-lighter);
+  --color-sold-bg: var(--color-cream-dark);
+}
+
+/* Dark Mode — preparado mantendo identidade da marca */
+@media (prefers-color-scheme: dark) {
+  :root[data-theme="dark"] {
+    --color-bg: var(--color-purple-dark);
+    --color-bg-alt: var(--color-purple);
+    --color-surface: var(--color-purple);
+    --color-surface-elevated: var(--color-purple-soft);
+    --color-surface-hover: var(--color-purple-soft);
+
+    --color-border: var(--color-purple-soft);
+    --color-border-strong: var(--color-purple-light);
+    --color-border-brand: var(--color-gold);
+
+    --color-text-primary: var(--color-white);
+    --color-text-secondary: var(--color-cream);
+    --color-text-muted: var(--color-cream-dark);
+    --color-text-inverse: var(--color-purple-dark);
+    --color-text-on-brand: var(--color-white);
+    --color-text-on-gold: var(--color-purple-dark);
+
+    --color-accent: var(--color-gold);
+    --color-accent-hover: var(--color-gold-light);
+    --color-accent-soft: var(--color-gold-dark);
+    --color-accent-lighter: var(--color-gold-lighter);
+
+    --color-accent-gold: var(--color-purple-light);
+    --color-accent-gold-hover: var(--color-purple-lighter);
+    --color-accent-gold-soft: var(--color-purple);
+    --color-accent-gold-lighter: var(--color-purple-soft);
+
+    --color-focus: var(--color-gold);
+    --color-focus-gold: var(--color-purple-light);
+
+    --color-available: var(--color-sage);
+    --color-available-bg: #1A3A1A;
+    --color-pending: var(--color-gold);
+    --color-pending-bg: #3A2E0A;
+    --color-sold: var(--color-cream-dark);
+    --color-sold-bg: #2A2A2A;
+  }
+}
+
+/* ==========================================================================
+   Typography — Fraunces (Display) + Manrope (UI)
+   ========================================================================== */
+
+:root {
+  /* Font families — self-hosted via @font-face em global.css */
+  --font-display: 'Fraunces', 'Georgia', serif;
+  --font-ui: 'Manrope', 'system-ui', -apple-system, sans-serif;
+
+  /* Type Scale — clamp fluido */
+  --text-display: clamp(2.5rem, 5vw + 1rem, 4.5rem);
+  --text-h1: clamp(2rem, 3vw + 1rem, 3.5rem);
+  --text-h2: clamp(1.5rem, 2vw + 0.5rem, 2.5rem);
+  --text-h3: clamp(1.25rem, 1.5vw + 0.5rem, 1.75rem);
+  --text-lg: 1.125rem;
+  --text-base: 1rem;
+  --text-sm: 0.875rem;
+  --text-xs: 0.75rem;
+
+  /* Line heights */
+  --leading-display: 1.05;
+  --leading-tight: 1.1;
+  --leading-snug: 1.15;
+  --leading-normal: 1.6;
+  --leading-relaxed: 1.65;
+  --leading-loose: 1.75;
+
+  /* Letter spacing */
+  --tracking-tight: -0.02em;
+  --tracking-normal: 0;
+  --tracking-wide: 0.05em;
+  --tracking-wider: 0.1em;
+
+  /* Font weights semânticos */
+  --weight-light: 300;
+  --weight-normal: 400;
+  --weight-medium: 500;
+  --weight-semibold: 600;
+  --weight-bold: 700;
+  --weight-extrabold: 800;
+}
+
+/* ==========================================================================
+   Spacing Scale (base 4px = 0.25rem)
+   ========================================================================== */
+:root {
+  --space-0: 0;
+  --space-1: 0.25rem;   /* 4px */
+  --space-2: 0.5rem;    /* 8px */
+  --space-3: 0.75rem;   /* 12px */
+  --space-4: 1rem;      /* 16px */
+  --space-5: 1.25rem;   /* 20px */
+  --space-6: 1.5rem;    /* 24px */
+  --space-8: 2rem;      /* 32px */
+  --space-10: 2.5rem;   /* 40px */
+  --space-12: 3rem;     /* 48px */
+  --space-16: 4rem;     /* 64px */
+  --space-20: 5rem;     /* 80px */
+  --space-24: 6rem;     /* 96px */
+}
+
+/* ==========================================================================
+   Border Radius
+   ========================================================================== */
+:root {
+  --radius-none: 0;
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 8px;
+  --radius-xl: 12px;
+  --radius-2xl: 16px;
+  --radius-full: 9999px;
+  --radius-pill: 9999px;
+}
+
+/* ==========================================================================
+   Shadows / Elevation (brand-aware)
+   ========================================================================== */
+:root {
+  --shadow-xs: 0 1px 2px rgb(36 27 46 / 0.05);
+  --shadow-sm: 0 1px 3px rgb(36 27 46 / 0.06), 0 1px 2px rgb(36 27 46 / 0.04);
+  --shadow-md: 0 4px 6px rgb(36 27 46 / 0.05), 0 2px 4px rgb(36 27 46 / 0.04);
+  --shadow-lg: 0 10px 15px rgb(36 27 46 / 0.06), 0 4px 6px rgb(36 27 46 / 0.04);
+  --shadow-xl: 0 20px 25px rgb(36 27 46 / 0.08), 0 10px 10px rgb(36 27 46 / 0.04);
+
+  /* Brand shadows */
+  --shadow-brand: 0 10px 30px rgb(60 3 89 / 0.15), 0 4px 12px rgb(60 3 89 / 0.08);
+  --shadow-gold: 0 10px 24px rgb(205 165 2 / 0.35);
+
+  /* Focus rings */
+  --focus-ring: 0 0 0 2px var(--color-white), 0 0 0 4px var(--color-focus);
+  --focus-ring-gold: 0 0 0 2px var(--color-white), 0 0 0 4px var(--color-focus-gold);
+}
+
+/* ==========================================================================
+   Transitions
+   ========================================================================== */
+:root {
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --duration-fast: 100ms;
+  --duration-normal: 150ms;
+  --duration-slow: 250ms;
+  --duration-slower: 400ms;
+}
+
+/* ==========================================================================
+   Breakpoints
+   ========================================================================== */
+:root {
+  --bp-sm: 640px;
+  --bp-md: 768px;
+  --bp-lg: 1024px;
+  --bp-xl: 1280px;
+  --bp-2xl: 1536px;
+}
+
+/* ==========================================================================
+   Container / Layout
+   ========================================================================== */
+:root {
+  --container-max: 1180px;   /* matching landing template */
+  --container-padding: var(--space-6);
+  --header-height: 64px;
+  --header-height-lg: 72px;
+}
+
+/* ==========================================================================
+   Z-Index Scale
+   ========================================================================== */
+:root {
+  --z-dropdown: 100;
+  --z-sticky: 200;
+  --z-fixed: 300;
+  --z-modal-backdrop: 400;
+  --z-modal: 500;
+  --z-popover: 600;
+  --z-tooltip: 700;
+  --z-toast: 800;
+}
+
+/* ==========================================================================
+   Component-specific tokens (Button, Card, Input, etc.)
+   ========================================================================== */
+
+/* Button */
+:root {
+  --btn-height-sm: 40px;
+  --btn-height-md: 48px;
+  --btn-height-lg: 56px;
+  --btn-padding-x-sm: 1rem;
+  --btn-padding-x-md: 1.5rem;
+  --btn-padding-x-lg: 2rem;
+  --btn-radius: var(--radius-md);
+  --btn-font-size: var(--text-sm);
+  --btn-font-weight: var(--weight-semibold);
+  --btn-letter-spacing: 0.3px;
+}
+
+/* Card (Property) */
+:root {
+  --card-radius: var(--radius-xl);
+  --card-border: 1px solid var(--color-border);
+  --card-shadow: var(--shadow-sm);
+  --card-shadow-hover: var(--shadow-lg);
+  --card-transition: all var(--duration-slow) var(--ease-out);
+}
+
+/* Input / Form */
+:root {
+  --input-height: 48px;
+  --input-padding-x: var(--space-4);
+  --input-radius: var(--radius-md);
+  --input-border: 1px solid var(--color-border);
+  --input-border-focus: 2px solid var(--color-accent);
+  --input-bg: var(--color-surface);
+  --input-placeholder-color: var(--color-text-muted);
+}
+
+/* Badge / Tag */
+:root {
+  --badge-radius: var(--radius-pill);
+  --badge-padding-x: 0.75rem;
+  --badge-padding-y: 0.375rem;
+  --badge-font-size: var(--text-xs);
+  --badge-font-weight: var(--weight-semibold);
+}
+
+/* ==========================================================================
+   Motion / Animation tokens
+   ========================================================================== */
+:root {
+  --motion-duration-fast: 150ms;
+  --motion-duration-normal: 300ms;
+  --motion-duration-slow: 500ms;
+  --motion-ease: var(--ease-out);
+  --motion-ease-spring: var(--ease-spring);
+}
+
+/* ==========================================================================
+   Reduced Motion — global override
+   ========================================================================== */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --motion-duration-fast: 0.01ms;
+    --motion-duration-normal: 0.01ms;
+    --motion-duration-slow: 0.01ms;
+    --duration-fast: 0.01ms;
+    --duration-normal: 0.01ms;
+    --duration-slow: 0.01ms;
+    --duration-slower: 0.01ms;
+  }
+}
